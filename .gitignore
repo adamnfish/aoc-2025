@@ -1,0 +1,39 @@
+puzzle-inputs/day*/input.txt
+
+# Scala / SBT
+target/
+lib_managed/
+src_managed/
+project/boot/
+project/plugins/project/
+.history
+.cache
+.lib/
+dist/*
+*.class
+*.log
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Metals (Scala language server)
+.metals/
+.bloop/
+.bsp/
+metals.sbt
+
+# VS Code
+.vscode/
+
+# Emacs
+*#
+.#*
