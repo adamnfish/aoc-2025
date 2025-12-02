@@ -10,7 +10,7 @@ import com.adamnfish.Parsing.intoF
 object Day01 {
   val size = 99 + 1
 
-  def part1(inputFile: String) = {
+  def part1(inputFile: String): IO[String] = {
     for {
       count <- Tools
         .inputLines("1", inputFile)
@@ -35,7 +35,6 @@ object Day01 {
           val additionalZeroes = countZeroesPassed(position, rotation)
           (newPosition, count + additionalZeroes)
         }
-//        .evalTap(IO.println)
         .map(_._2)
         .compile
         .lastOrError
@@ -60,9 +59,9 @@ object Day01 {
   ): Int = {
     // how many full rotations are in the distance
     val fullRotations = rotation.distance / size
-    val remainder = rotation.distance % size
     // maybe we pass an extra zero in the partial rotation
     // (only if there is a partial rotation - i.e. remainder > 0)
+    val remainder = rotation.distance % size
     val partialRotationExtra = rotation.direction match {
       case Direction.Left =>
         if (remainder > 0 && position > 0 && position - remainder <= 0)
@@ -75,31 +74,31 @@ object Day01 {
     }
     fullRotations + partialRotationExtra
   }
-}
-
-case class Rotation(
+  
+  case class Rotation(
     direction: Direction,
     distance: Int
-)
+  )
 
-enum Direction {
-  case Left
-  case Right
-}
+  enum Direction {
+    case Left
+    case Right
+  }
 
-object Parser {
-  import fastparse.*, SingleLineWhitespace.*
+  object Parser {
+    import fastparse.*, SingleLineWhitespace.*
 
-  def parseLine(line: String): IO[Rotation] =
-    parse(line, lineParser(using _)).intoF
+    def parseLine(line: String): IO[Rotation] =
+      parse(line, lineParser(using _)).intoF
 
-  def lineParser[$: P]: P[Rotation] =
-    P(
-      (CharIn("LR").! ~ Parsing.integer).map {
-        case ("L", dist) => Rotation(Direction.Left, dist)
-        case ("R", dist) => Rotation(Direction.Right, dist)
-        case (c, _)      =>
-          throw RuntimeException(s"Unexpected direction char in input: $c")
-      }
-    )
+    def lineParser[$: P]: P[Rotation] =
+      P(
+        (CharIn("LR").! ~ Parsing.integer).map {
+          case ("L", dist) => Rotation(Direction.Left, dist)
+          case ("R", dist) => Rotation(Direction.Right, dist)
+          case (c, _)      =>
+            throw RuntimeException(s"Unexpected direction char in input: $c")
+        }
+      )
+  }
 }
