@@ -9,6 +9,14 @@ import com.adamnfish.Parsing.intoF
 
 object Day02 {
   def part1(input: String): IO[String] = {
+    day2logic(input)(validate1)
+  }
+
+  def part2(input: String): IO[String] = {
+    day2logic(input)(validate2)
+  }
+
+  def day2logic(input: String)(validator: BigInt => Id): IO[String] = {
     for {
       line <- Tools
         .inputLines("2", input)
@@ -17,30 +25,35 @@ object Day02 {
         .lastOrError
       idRange <- Parser.parseLine(line)
       ids = idRange.flatMap(expandRange)
-      validatedIds = ids.map(validate)
-//      _ <- IO.println(validatedIds)
+      validatedIds = ids.map(validator)
       invalidIds = validatedIds.collect { case Id.Invalid(id) =>
         id
       }
     } yield invalidIds.sum.toString
   }
 
-  def part2(input: String): IO[String] = {
-    ???
-  }
+  private val IsInvalidSillyPatterns =
+    """^(\d+)\1$""".r
+
+  private val IsInvalidOtherSillyPatterns =
+    """^(\d+)\1+$""".r
+
+  def validate1(id: BigInt): Id =
+    id.toString match {
+      case IsInvalidSillyPatterns(_) => Id.Invalid(id)
+      case _                         => Id.Valid(id)
+    }
+
+  def validate2(id: BigInt): Id =
+    id.toString match {
+      case IsInvalidOtherSillyPatterns(_) => Id.Invalid(id)
+      case _                              => Id.Valid(id)
+    }
 
   case class IdRange(start: BigInt, end: BigInt)
 
   def expandRange(idRange: IdRange): Seq[BigInt] =
     idRange.start to idRange.end
-
-  private val IsInvalidId = """^(\d+)\1$""".r
-
-  def validate(id: BigInt): Id =
-    id.toString match {
-      case IsInvalidId(_) => Id.Invalid(id)
-      case _              => Id.Valid(id)
-    }
 
   enum Id {
     case Valid(id: BigInt)
@@ -58,6 +71,11 @@ object Day02 {
         (Parsing.bigInt ~ "-" ~ Parsing.bigInt)
           .map { case (start, end) => IdRange(start, end) }
           .rep(sep = ",")
+      )
+
+    def invalidParser[$: P]: P[Seq[BigInt]] =
+      P(
+        Parsing.bigInt.rep(sep = ",")
       )
   }
 }
