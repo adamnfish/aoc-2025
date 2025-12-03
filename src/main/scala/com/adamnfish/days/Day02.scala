@@ -6,17 +6,30 @@ import cats.syntax.all.*
 import cats.effect.IO
 import com.adamnfish.{Parsing, Tools}
 import com.adamnfish.Parsing.intoF
+import scala.util.matching.Regex
 
 object Day02 {
   def part1(input: String): IO[String] = {
-    day2logic(input)(validate1)
+    day2logic(input, IsInvalidSillyPatterns)
   }
 
   def part2(input: String): IO[String] = {
-    day2logic(input)(validate2)
+    day2logic(input, IsInvalidOtherSillyPatterns)
   }
 
-  def day2logic(input: String)(validator: BigInt => Id): IO[String] = {
+  val IsInvalidSillyPatterns =
+    """^(\d+)\1$""".r
+
+  val IsInvalidOtherSillyPatterns =
+    """^(\d+)\1+$""".r
+
+  def validate(id: BigInt, badIdCheck: Regex): Id =
+    id.toString match {
+      case badIdCheck(_) => Id.Invalid(id)
+      case _             => Id.Valid(id)
+    }
+
+  def day2logic(input: String, badIdCheck: Regex): IO[String] = {
     for {
       line <- Tools
         .inputLines("2", input)
@@ -25,35 +38,17 @@ object Day02 {
         .lastOrError
       idRange <- Parser.parseLine(line)
       ids = idRange.flatMap(expandRange)
-      validatedIds = ids.map(validator)
+      validatedIds = ids.map(validate(_, badIdCheck))
       invalidIds = validatedIds.collect { case Id.Invalid(id) =>
         id
       }
     } yield invalidIds.sum.toString
   }
 
-  private val IsInvalidSillyPatterns =
-    """^(\d+)\1$""".r
-
-  private val IsInvalidOtherSillyPatterns =
-    """^(\d+)\1+$""".r
-
-  def validate1(id: BigInt): Id =
-    id.toString match {
-      case IsInvalidSillyPatterns(_) => Id.Invalid(id)
-      case _                         => Id.Valid(id)
-    }
-
-  def validate2(id: BigInt): Id =
-    id.toString match {
-      case IsInvalidOtherSillyPatterns(_) => Id.Invalid(id)
-      case _                              => Id.Valid(id)
-    }
+  private def expandRange(idRange: IdRange): Seq[BigInt] =
+    idRange.start to idRange.end
 
   case class IdRange(start: BigInt, end: BigInt)
-
-  def expandRange(idRange: IdRange): Seq[BigInt] =
-    idRange.start to idRange.end
 
   enum Id {
     case Valid(id: BigInt)
@@ -71,11 +66,6 @@ object Day02 {
         (Parsing.bigInt ~ "-" ~ Parsing.bigInt)
           .map { case (start, end) => IdRange(start, end) }
           .rep(sep = ",")
-      )
-
-    def invalidParser[$: P]: P[Seq[BigInt]] =
-      P(
-        Parsing.bigInt.rep(sep = ",")
       )
   }
 }
