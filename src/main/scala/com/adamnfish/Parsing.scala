@@ -34,3 +34,6 @@ object Parsing:
 
   def paddedBigInt[$: P]: P[BigInt] =
     P(" ".rep(min = 0) ~ bigInt)
+  
+  def digit[$: P]: P[Int] =
+    P(CharIn("0-9").!.map(_.toInt))
