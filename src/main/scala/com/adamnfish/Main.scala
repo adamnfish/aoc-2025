@@ -41,13 +41,13 @@ object Main extends IOApp {
 
         case "4" :: "2" :: input :: _ =>
           Day04.part2(input)
-//
-//        case "5" :: "1" :: input :: _ =>
-//          Day05.part1(input)
-//
-//        case "5" :: "2" :: input :: _ =>
-//          Day05.part2(input)
-//
+
+        case "5" :: "1" :: input :: _ =>
+          Day05.part1(input)
+
+        case "5" :: "2" :: input :: _ =>
+          Day05.part2(input)
+
 //        case "6" :: "1" :: input :: _ =>
 //          Day06.part1(input)
 //

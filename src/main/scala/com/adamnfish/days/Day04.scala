@@ -31,7 +31,7 @@ object Day04 {
         .compile
         .lastOrError
       (finalGrid, eliminatedCount) = repeatedlyEliminateReachable(grid, 0)
-    } yield eliminatedCount
+    } yield eliminatedCount.toString
   }
 
   /** Turns a stream of lines into our Grid data structure.
