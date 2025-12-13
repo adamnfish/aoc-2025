@@ -18,7 +18,7 @@ class Day06Test extends AsyncFreeSpec with AsyncIOSpec with Matchers {
     "works on the example input" in {
       Day06
         .part2("example")
-        .asserting(_ shouldBe "1")
+        .asserting(_ shouldBe "3263827")
     }
   }
 }
