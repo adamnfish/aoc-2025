@@ -15,4 +15,12 @@ class Day04Test extends AsyncFreeSpec with AsyncIOSpec with Matchers {
         .asserting(_ shouldBe "13")
     }
   }
+
+  "part2" - {
+    "works on the example input" in {
+      Day04
+        .part2("example")
+        .asserting(_ shouldBe 43)
+    }
+  }
 }
