@@ -36,10 +36,7 @@ object Day05 {
       ranges <- inputLines
         .takeWhile(_.nonEmpty)
         .traverse(Parser.parseRange)
-      allFreshIds = ranges
-        .flatMap(expandRange)
-        .toSet
-    } yield allFreshIds.size.toString
+    } yield resolveRanges(ranges).toString
   }
 
   def idIsFresh(id: BigInt, ranges: Seq[Range]): Boolean = {
@@ -48,11 +45,26 @@ object Day05 {
     }
   }
 
-  def expandRange(range: Range): Set[BigInt] = {
-    (range.start to range.end).toSet
+  def resolveRanges(ranges: Vector[Range]): BigInt = {
+    val (count, _) = ranges
+      .sortBy(_.start)
+      .foldLeft(BigInt(0), BigInt(0)) { case ((count, pointer), range) =>
+        if (range.end < pointer) { // If the range is entirely before our pointer, ignore it
+          (count, pointer)
+        } else if (range.start <= pointer) { // Overlaps with our pointer, extend to the end
+          val newCount = count + (range.end - pointer + 1)
+          (newCount, range.end + 1)
+        } else { // Starts after our pointer, add the whole range
+          val newCount = count + range.size
+          (newCount, range.end + 1)
+        }
+      }
+    count
   }
 
-  case class Range(start: BigInt, end: BigInt)
+  case class Range(start: BigInt, end: BigInt) {
+    def size: BigInt = end - start + 1
+  }
 
   object Parser {
     import fastparse.*, NoWhitespace.*
