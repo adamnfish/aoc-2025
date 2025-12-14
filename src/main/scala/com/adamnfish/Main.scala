@@ -60,12 +60,12 @@ object Main extends IOApp {
         case "7" :: "2" :: input :: _ =>
           Day07.part2(input)
 
-//        case "8" :: "1" :: input :: _ =>
-//          Day08.part1(input)
-//
-//        case "8" :: "2" :: input :: _ =>
-//          Day08.part2(input)
-//
+        case "8" :: "1" :: input :: _ =>
+          Day08.part1(input)
+
+        case "8" :: "2" :: input :: _ =>
+          Day08.part2(input)
+
 //        case "9" :: "1" :: input :: _ =>
 //          Day09.part1(input)
 //
